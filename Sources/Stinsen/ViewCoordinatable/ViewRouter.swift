@@ -1,4 +1,5 @@
 import Foundation
+import Resolver
 
 public class ViewRouter<T: ViewRoute>: ObservableObject {
     private let routable: ViewRoutable
@@ -9,5 +10,6 @@ public class ViewRouter<T: ViewRoute>: ObservableObject {
     
     init<U: ViewCoordinatable>(_ coordinator: U) {
         self.routable = ViewRoutable(coordinator: coordinator)
+        Resolver.main.register{ self }
     }
 }

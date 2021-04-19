@@ -10,4 +10,5 @@ Pod::Spec.new do |spec|
     spec.framework    = 'SwiftUI'
     spec.ios.deployment_target  = '13.0'
     spec.swift_version = '5.3'
+    spec.dependency 'Resolver'
   end

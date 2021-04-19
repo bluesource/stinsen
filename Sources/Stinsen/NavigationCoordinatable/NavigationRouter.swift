@@ -1,4 +1,5 @@
 import Foundation
+import Resolver
 
 public class NavigationRouter<T: NavigationRoute>: ObservableObject {
     private let routable: NavigationRoutable
@@ -20,5 +21,6 @@ public class NavigationRouter<T: NavigationRoute>: ObservableObject {
     init<U: NavigationCoordinatable>(id: Int?, coordinator: U) {
         self.id = id
         self.routable = NavigationRoutable(coordinator: coordinator)
+        Resolver.main.register{ self }
     }
 }
