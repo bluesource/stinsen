@@ -22,6 +22,8 @@ let package = Package(
     targets: [
         .target(
             name: "Stinsen",
-            dependencies: []),
+            dependencies: [
+        .package(url: "https://github.com/hmlongco/Resolver.git", from: "1.4.1"),
+    ]),
     ]
 )
