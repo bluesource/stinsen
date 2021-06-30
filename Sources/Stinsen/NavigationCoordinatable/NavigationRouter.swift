@@ -28,7 +28,7 @@ open class NavigationRouter<T: NavigationRoute>: ObservableObject {
         self.routable = NavigationRoutable(coordinator: coordinator)
         
         _popToRoot = {
-            coordinator.navigationStack.popTo(-1)
+            coordinator.navigationStack.popToRoot()
         }
         
         Resolver.main.register{ self }
