@@ -31,14 +31,15 @@ class TestbedCoordinator: NavigationCoordinatable {
             return .push(
                 AnyView(
                     TestbedScreen()
-                        .navigationBarTitle("Pushed testbed")
+                        .navigationTitle(with: "Pushed testbed")
                 )
             )
         case .modalScreen:
             return .modal(
                 AnyView(
-                    TestbedScreen()
-                        .navigationBarTitle("Modal testbed")
+                    NavigationView {
+                        TestbedScreen().navigationTitle(with: "Modal testbed")
+                    }
                 )
             )
         }
@@ -46,6 +47,6 @@ class TestbedCoordinator: NavigationCoordinatable {
     
     @ViewBuilder func start() -> some View {
         TestbedScreen()
-            .navigationBarTitle("Coordinator testbed")
+            .navigationTitle(with: "Coordinator testbed")
     }
 }
