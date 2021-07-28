@@ -20,7 +20,8 @@ open class NavigationRouter<T: NavigationRoute>: ObservableObject {
     }
     
     open func dismiss(onFinished: @escaping (() -> Void) = {}) {
-        routable.dismiss(withRootCoordinator: root!, onFinished: onFinished)
+        guard let root = root else { return onFinished() }
+        routable.dismiss(withRootCoordinator: root, onFinished: onFinished)
     }
     
     public init<U: NavigationCoordinatable>(id: Int?, coordinator: U) {
@@ -31,6 +32,8 @@ open class NavigationRouter<T: NavigationRoute>: ObservableObject {
             coordinator.navigationStack.popToRoot()
         }
         
-        Resolver.main.register{ self }
+        Resolver.main
+            .register{ self }
+            .scope(.unique)
     }
 }
