@@ -30,9 +30,5 @@ public class NavigationRouter<T: NavigationRoute>: Routable {
         _popToRoot = {
             coordinator.navigationStack.popToRoot()
         }
-        
-        Resolver.main
-            .register{ self }
-            .scope(.unique)
     }
 }
