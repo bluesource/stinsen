@@ -134,6 +134,13 @@ class PresentationHelper<T: NavigationCoordinatable>: ObservableObject {
         }
         .store(in: &cancellables)
         
+        navigationStack.poppedToId.filter{ $0 == id }.sink { [weak self] _ in
+            DispatchQueue.main.async { [weak self] in
+                self?.presented = nil
+            }
+        }
+        .store(in: &cancellables)
+        
         navigationStack.poppedTo.filter { int -> Bool in int <= id }.sink { [weak self] int in
             // remove any and all presented views if my id is less than or equal to the view being popped to!
             DispatchQueue.main.async { [weak self] in

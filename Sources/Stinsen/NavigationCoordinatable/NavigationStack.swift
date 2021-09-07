@@ -19,6 +19,7 @@ public class NavigationStack: ObservableObject {
     }
     
     public var poppedTo = PassthroughSubject<Int, Never>()
+    public var poppedToId = PassthroughSubject<Int, Never>()
     public var dismissalAction: DismissalAction
     
     @Published private (set) var value: [Transition]
@@ -26,6 +27,12 @@ public class NavigationStack: ObservableObject {
     public init() {
         self.value = []
         self.dismissalAction = {}
+    }
+    
+    public func popToRoot() {
+        value = []
+        poppedToId.send(-1)
+        popTo(-1)//Necessary to close all not closed views, to release the viewmodels
     }
     
     public func popTo(_ int: Int) {

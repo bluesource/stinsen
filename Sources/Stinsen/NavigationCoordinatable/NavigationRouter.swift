@@ -3,22 +3,36 @@ import Foundation
 public class NavigationRouter<T: NavigationRoute>: Routable {
     private let routable: NavigationRoutable
     var root: AnyCoordinatable?
+    var _popToRoot: () -> Void
     public let id: Int?
     
-    public func route(to route: T) {
+    open func route(to route: T) {
         routable.anyRoute(to: route)
     }
     
-    public func pop() {
+    open func pop() {
         routable.pop()
     }
     
-    public func dismiss(onFinished: @escaping (() -> Void) = {}) {
-        routable.dismiss(withRootCoordinator: root!, onFinished: onFinished)
+    open func popToRoot() {
+        _popToRoot()
     }
     
-    init<U: NavigationCoordinatable>(id: Int?, coordinator: U) {
+    open func dismiss(onFinished: @escaping (() -> Void) = {}) {
+        guard let root = root else { return onFinished() }
+        routable.dismiss(withRootCoordinator: root, onFinished: onFinished)
+    }
+    
+    public init<U: NavigationCoordinatable>(id: Int?, coordinator: U) {
         self.id = id
         self.routable = NavigationRoutable(coordinator: coordinator)
+        
+        _popToRoot = {
+            coordinator.navigationStack.popToRoot()
+        }
+        
+        Resolver.main
+            .register{ self }
+            .scope(.unique)
     }
 }

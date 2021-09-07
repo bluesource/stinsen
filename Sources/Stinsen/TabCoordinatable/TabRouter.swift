@@ -1,4 +1,5 @@
 import Foundation
+import Resolver
 
 public class TabRouter<T: TabRoute>: Routable {
     private let routable: TabRoutable
@@ -9,5 +10,6 @@ public class TabRouter<T: TabRoute>: Routable {
     
     init<U: TabCoordinatable>(_ coordinator: U) {
         self.routable = TabRoutable(coordinator: coordinator)
+        Resolver.main.register{ self }
     }
 }

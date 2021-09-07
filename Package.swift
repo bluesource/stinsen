@@ -11,10 +11,12 @@ let package = Package(
             targets: ["Stinsen"]
         )
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/hmlongco/Resolver.git", from: "1.4.1"),
+    ],
     targets: [
         .target(
             name: "Stinsen",
-            dependencies: []),
+            dependencies: ["Resolver"]),
     ]
 )
