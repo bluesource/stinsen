@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct NavigationViewCoordinatableView<T: NavigationViewCoordinatable<V>, U: View, V: View>: View {
+struct NavigationViewCoordinatorView<T: NavigationViewCoordinator<V>, U: View, V: View>: View {
     var coordinator: T    
     @EnvironmentObject private var root: RootCoordinator
     private var view: AnyView
@@ -20,7 +20,7 @@ struct NavigationViewCoordinatableView<T: NavigationViewCoordinatable<V>, U: Vie
         }
         .onReceive(coordinator.children.$childCoordinator) { (value) in
             if value == nil {
-                guard let parent = root.coordinator.allChildCoordinators.first(where: {
+                guard let parent = ([root.coordinator] + root.coordinator.allChildCoordinators).first(where: {
                     $0.childCoordinators.contains(where: {
                         coordinator.id == $0.id
                     })
@@ -41,7 +41,7 @@ struct NavigationViewCoordinatableView<T: NavigationViewCoordinatable<V>, U: Vie
         .navigationViewStyle(StackNavigationViewStyle())
         .onReceive(coordinator.children.$childCoordinator) { (value) in
             if value == nil {
-                guard let parent = root.coordinator.allChildCoordinators.first(where: {
+                guard let parent = ([root.coordinator] + root.coordinator.allChildCoordinators).first(where: {
                     $0.childCoordinators.contains(where: {
                         coordinator.id == $0.id
                     })

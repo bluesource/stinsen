@@ -3,8 +3,8 @@ import SwiftUI
 
 import Stinsen
 
-struct TestbedScreen: View {
-    @EnvironmentObject var testbed: NavigationRouter<TestbedCoordinator.Route>
+struct TestbedEnvironmentObjectScreen: View {
+    @EnvironmentObject var testbed: NavigationRouter<TestbedEnvironmentObjectCoordinator.Route>
     @State var text: String = ""
     
     var body: some View {
@@ -18,11 +18,21 @@ struct TestbedScreen: View {
                 RoundedButton("Push screen") {
                     testbed.route(to: .pushScreen)
                 }
+                if #available(iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
+                    RoundedButton("Cover screen") {
+                        testbed.route(to: .coverScreen)
+                    }
+                }
                 RoundedButton("Modal coordinator") {
                     testbed.route(to: .modalCoordinator)
                 }
                 RoundedButton("Push coordinator") {
                     testbed.route(to: .pushCoordinator)
+                }
+                if #available(iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
+                    RoundedButton("Cover coordinator") {
+                        testbed.route(to: .coverCoordinator)
+                    }
                 }
                 RoundedButton("Dismiss me!") {
                     testbed.dismiss {

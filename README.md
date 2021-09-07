@@ -10,7 +10,7 @@ Simple, powerful and elegant implementation of the Coordinator pattern in SwiftU
 
 # Why? 🤔
 
-We all know routing in UIKit can be hard to do elegantly when working with applications of a larger size or when attempting to apply an architectural pattern such as MVVM. Unfortunately, SwiftUI out of the box suffers from many of the same problems as UIKit does: concepts such as `NavigationLink` live in the view-layer, we still have no clear concept of flows and routes, and so on. _Stinsen_ was created to alleviate these pains, and is an implementation of the _Coordinator Pattern_. Being written in SwiftUI, it is completely cross-platform and uses the native tools such as `@EnviromentObject`. The goal is to make _Stinsen_ feel like a missing tool in SwiftUI, conforming to its coding style and general principles.
+We all know routing in UIKit can be hard to do elegantly when working with applications of a larger size or when attempting to apply an architectural pattern such as MVVM. Unfortunately, SwiftUI out of the box suffers from many of the same problems as UIKit does: concepts such as `NavigationLink` live in the view-layer, we still have no clear concept of flows and routes, and so on. _Stinsen_ was created to alleviate these pains, and is an implementation of the _Coordinator Pattern_. Being written in SwiftUI, it is completely cross-platform and uses the native tools such as `@EnvironmentObject`. The goal is to make _Stinsen_ feel like a missing tool in SwiftUI, conforming to its coding style and general principles.
 
 # What is a Coordinator? 🤷🏽‍♂️ 
 
@@ -46,7 +46,7 @@ class ProjectsCoordinator: NavigationCoordinatable {
 
 The `Route`-enum defines all the possible routes that can be performed from the current coordinator. The function `resolve(route: Route)` is responsible for providing the transition and the actual view/coordinator that we will route to. This can be combined with a factory in the coordinator as well.
 
-To perform these transitions, we use `@EnviromentObject` to fetch a reference to the Coordinators context:
+Using a router, which has a reference to the coordinator, we can perform transitions from a view - but also pop to the previous screen, dismissing the coordinator, switch tab etc (depending on the type of coordinator). Inside the view, the router can be fetched using `@EnvironmentObject`.
 
 ```swift
 struct ProjectsScreen: View {
@@ -66,13 +66,63 @@ struct ProjectsScreen: View {
 }
 ```
 
-You can also fetch references for coordinators that have appeared earlier in the tree, for instance, if you want to switch the tab. This `@EnvironmentObject` can be put into a ViewModel if you wish to follow the MVVM-C Architectural Pattern. 
+You can also fetch routers referencing coordinators that appeared earlier in the tree. For instance, you may want to switch the tab from a view that is inside the `TabView`.
 
 Stinsen out of the box has three different kinds of `Coordinatable` protocols your coordinators can implement: 
 
 * `NavigationCoordinatable` - For navigational flows. Make sure to wrap these in a NavigationViewCoordinator somewhere if you wish to push on the navigation stack.
 * `TabCoordinatable` - For TabViews.
 * `ViewCoordinatable` - Just a view and routes that do not push but rather replace the entire view, can be used for instance when switching between logged in/logged out.
+
+# ViewModel Support 🖥
+
+Since `@EnvironmentObject` only can be accessed within a `View`, _Stinsen_ provides two methods of passing the router to the ViewModel.
+
+## Via onAppear
+
+```swift
+struct ProjectsScreen: View {
+    @EnvironmentObject var projects: NavigationRouter<ProjectsCoordinator.Route>
+    
+    var body: some View {
+        List {
+          /* ... */
+        }
+        .onAppear {
+            viewModel.router = projects
+        }
+    }
+}
+```
+
+## RouterObject
+
+The `RouterStore` saves the instance of the router and you can get it via a custom PropertyWrapper. This provides a nice decoupling between View and ViewModel.
+
+To retrieve a router:
+```swift
+class LoginScreenViewModel: ObservableObject {
+    
+    // directly via the RouterStore
+    var main: ViewRouter<MainCoordinator.Route>? = RouterStore.shared.retrieve()
+    
+    // via the RouterObject property wrapper
+    @RouterObject
+    var unauthenticated: NavigationRouter<UnauthenticatedCoordinator.Route>?
+    
+    init() {
+        
+    }
+    
+    func loginButtonPressed() {
+        main?.route(to: .authenticated)
+    }
+    
+    func forgotPasswordButtonPressed() {
+        unauthenticated?.route(to: .forgotPassword)
+    }
+}
+```
 
 # Installation 💾
 
@@ -100,6 +150,10 @@ end
 
 Clone the repo and run the _StinsenApp_ to get a feel for how _Stinsen_ can be used. _StinsenApp_ works on iOS, tvOS, watchOS and macOS. It attempts to showcase many of the features _Stinsen_ has available for you to use.
 
+# Known issues and bugs 🐛
+
+* _Stinsen_ does not support `DoubleColumnNavigationViewStyle`. The reason for this is that it does not work as expected due to issues with `isActive` in SwiftUI. _Workaround:_ Use UIViewRepresentable or create your own implementation.
+* _Stinsen_ works pretty bad in various older versions of iOS 13 due to, well, iOS 13 not really being that good at SwiftUI. Rather than trying to set a minimum version that _Stinsen_ supports, you're on your own if you're supporting iOS 13 to figure out whether or not the features you use actually work. Generally, version 13.4 and above seem to work alright.
 
 # Who are responsible? 🙋🏽‍♀️
 

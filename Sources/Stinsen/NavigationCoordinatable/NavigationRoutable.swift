@@ -23,11 +23,12 @@ class NavigationRoutable {
         }
         
         _anyRoute = { route in
-            coordinator.route(to: route as! T.Route)
+            let resolved = coordinator.resolveRoute(route: route as! T.Route)
+            coordinator.navigationStack.append(resolved)
         }
         
         _dismiss = { root, onFinished in
-            guard let parent = root.allChildCoordinators.first(where: {
+            guard let parent = ([root] + root.allChildCoordinators).first(where: {
                 $0.childCoordinators.contains(where: {
                     coordinator.id == $0.id
                 })
